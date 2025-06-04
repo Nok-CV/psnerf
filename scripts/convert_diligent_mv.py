@@ -71,7 +71,7 @@ def load_calibration(calib_dir):
     light_dirs = np.asarray(light_dirs)
     if light_dirs.ndim == 2 and light_dirs.shape[0] == 3:
         light_dirs = light_dirs.T
-=======
+
 def load_calibration(calib_dir):
     """Load intrinsics, extrinsics and light directions from DiLiGenT-MV calib files."""
     K_path = os.path.join(calib_dir, 'intrinsics.txt')
