@@ -7,6 +7,71 @@ from PIL import Image
 from scipy.io import loadmat
 
 
+
+def _search_file(calib_dir, keywords, exts):
+    """Return the first file in ``calib_dir`` whose name contains any of
+    ``keywords`` and ends with one of ``exts`` (case-insensitive)."""
+    for f in os.listdir(calib_dir):
+        name = f.lower()
+        if any(k in name for k in keywords) and any(name.endswith(e) for e in exts):
+            return os.path.join(calib_dir, f)
+    return None
+
+
+def _load_mat_var(path, keys):
+    data = loadmat(path)
+    for k in keys:
+        if k in data:
+            return data[k]
+    for k, v in data.items():
+        if not k.startswith("__"):
+            return v
+    raise KeyError(f"No usable variable found in {path}")
+
+
+def _load_matrix(calib_dir, def_txt, def_mat, keywords, mat_keys):
+    if def_txt:
+        p = os.path.join(calib_dir, def_txt)
+        if os.path.exists(p):
+            return np.loadtxt(p)
+    if def_mat:
+        p = os.path.join(calib_dir, def_mat)
+        if os.path.exists(p):
+            return _load_mat_var(p, mat_keys)
+
+    p = _search_file(calib_dir, keywords, ['.txt'])
+    if p is not None:
+        return np.loadtxt(p)
+    p = _search_file(calib_dir, keywords, ['.mat'])
+    if p is not None:
+        return _load_mat_var(p, mat_keys)
+    raise FileNotFoundError(f"Cannot find {keywords[0]} file")
+
+
+def load_calibration(calib_dir):
+    """Load intrinsics, extrinsics and light directions from DiLiGenT-MV calib files.
+    The function searches for common file names if the default ones are not
+    present."""
+
+    K = _load_matrix(calib_dir, 'intrinsics.txt', 'intrinsics.mat',
+                     ['intrin', 'k'], ['K'])
+    K = K.reshape(3, 3)
+
+    poses = _load_matrix(calib_dir, 'extrinsics.txt', 'extrinsics.mat',
+                         ['extrin', 'pose', 'c2w'], ['pose_c2w'])
+    poses = np.asarray(poses)
+    if poses.shape[-2:] == (4, 4):
+        poses = poses.reshape(-1, 4, 4)
+    else:
+        poses = poses.reshape(4, 4, -1).transpose(2, 0, 1)
+
+    light_dirs = _load_matrix(calib_dir, 'light_directions.txt',
+                              'light_directions.mat',
+                              ['light', 'dir'], ['light_direction'])
+    light_dirs = np.asarray(light_dirs)
+    if light_dirs.ndim == 2 and light_dirs.shape[0] == 3:
+        light_dirs = light_dirs.T
+=======
 def load_calibration(calib_dir):
     """Load intrinsics, extrinsics and light directions from DiLiGenT-MV calib files."""
     K_path = os.path.join(calib_dir, 'intrinsics.txt')

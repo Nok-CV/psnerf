@@ -65,9 +65,7 @@ script copies the images and calibration files and generates the required
 python scripts/convert_diligent_mv.py /path/to/DiLiGenT-MV/BEAR ./dataset/bear
 ```
 
-The command assumes that camera intrinsics, extrinsics and light directions are
-available under `calib/` of the source folder and images are grouped by view in
-`images/view_*/`.
+
 ### Model
 We release the pretrained models of the 5 real scenes. After downloaded and extracted, you can find them in `./data` folder.
 
