@@ -54,6 +54,22 @@ The real dataset was processed from [DiLiGenT-MV Dataset](https://sites.google.c
 The synthetic dataset was rendered using [Mitsuba](https://www.mitsuba-renderer.org/), which contains 2 objects `BUNNY`, `ARMADILLO`.
 
 After downloaded and extracted, you can find the processed datasets in `./dataset` folder.
+
+### Convert DiLiGenT-MV Data
+If you have downloaded the raw DiLiGenT-MV dataset you can reorganize an object
+into the above directory layout using `scripts/convert_diligent_mv.py`. The
+script copies the images and calibration files and generates the required
+`params.json`:
+
+```bash
+python scripts/convert_diligent_mv.py /path/to/DiLiGenT-MV/BEAR ./dataset/bear
+```
+
+The command assumes calibration files reside in a `calib/` subfolder and images
+are grouped by view in `images/view_*/`.  If the calibration file names differ
+from the defaults (`intrinsics.*`, `extrinsics.*`, `light_directions.*`), the
+script tries to locate alternatives containing the words "intrin", "extrin" and
+"light" respectively.
 ### Model
 We release the pretrained models of the 5 real scenes. After downloaded and extracted, you can find them in `./data` folder.
 
@@ -184,6 +200,18 @@ light_intensity         (optional) list of light intensity for each view as [L1*
 view_slt_N              (optional) index of selected N views for training         
 light_slt_N             (optional) index of selected N lights for training
 ```
+
+### Finding Helmholtz Pairs
+
+For DiLiGenT-MV style data you can search for nearly collocated camera-light
+pairs using `scripts/find_helmholtz_pairs.py`. The script loads `params.json`
+from an object directory and prints all view/light combinations that satisfy the
+Helmholtz condition within a specified angular threshold (default 15.5°):
+
+```bash
+python scripts/find_helmholtz_pairs.py /path/to/OBJ_NAME
+```
+
 
 
 ## Citation
