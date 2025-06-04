@@ -65,19 +65,7 @@ script copies the images and calibration files and generates the required
 python scripts/convert_diligent_mv.py /path/to/DiLiGenT-MV/BEAR ./dataset/bear
 ```
 
-The command assumes calibration files reside in a `calib/` subfolder and images
-are grouped by view in `images/view_*/`.  If the calibration file names differ
-from the defaults (`intrinsics.*`, `extrinsics.*`, `light_directions.*`), the
-script tries to locate alternatives containing the words "intrin", "extrin" and
-"light" respectively.
 
-If you also want to find camera--light pairs that satisfy the Helmholtz
-condition, use `scripts/build_helmholtz_dataset.py` which performs the conversion
-and writes the detected pairs into `helmholtz_pairs.json`:
-
-```bash
-python scripts/build_helmholtz_dataset.py /path/to/DiLiGenT-MV/BEAR ./dataset/bear
-```
 ### Model
 We release the pretrained models of the 5 real scenes. After downloaded and extracted, you can find them in `./data` folder.
 

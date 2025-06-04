@@ -7,6 +7,7 @@ from PIL import Image
 from scipy.io import loadmat
 
 
+
 def _search_file(calib_dir, keywords, exts):
     """Return the first file in ``calib_dir`` whose name contains any of
     ``keywords`` and ends with one of ``exts`` (case-insensitive)."""
@@ -70,6 +71,39 @@ def load_calibration(calib_dir):
     light_dirs = np.asarray(light_dirs)
     if light_dirs.ndim == 2 and light_dirs.shape[0] == 3:
         light_dirs = light_dirs.T
+
+def load_calibration(calib_dir):
+    """Load intrinsics, extrinsics and light directions from DiLiGenT-MV calib files."""
+    K_path = os.path.join(calib_dir, 'intrinsics.txt')
+    if os.path.exists(K_path):
+        K = np.loadtxt(K_path).reshape(3, 3)
+    else:
+        # fallback to .mat file
+        mat_path = os.path.join(calib_dir, 'intrinsics.mat')
+        if os.path.exists(mat_path):
+            K = loadmat(mat_path)['K']
+        else:
+            raise FileNotFoundError('Cannot find camera intrinsics')
+
+    pose_path = os.path.join(calib_dir, 'extrinsics.txt')
+    if os.path.exists(pose_path):
+        poses = np.loadtxt(pose_path).reshape(-1, 4, 4)
+    else:
+        mat_path = os.path.join(calib_dir, 'extrinsics.mat')
+        if os.path.exists(mat_path):
+            poses = loadmat(mat_path)['pose_c2w']
+        else:
+            raise FileNotFoundError('Cannot find camera extrinsics')
+
+    light_path = os.path.join(calib_dir, 'light_directions.txt')
+    if os.path.exists(light_path):
+        light_dirs = np.loadtxt(light_path)
+    else:
+        mat_path = os.path.join(calib_dir, 'light_directions.mat')
+        if os.path.exists(mat_path):
+            light_dirs = loadmat(mat_path)['light_direction']
+        else:
+            raise FileNotFoundError('Cannot find light directions')
     return K, poses, light_dirs
 
 
