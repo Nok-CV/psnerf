@@ -185,6 +185,18 @@ view_slt_N              (optional) index of selected N views for training
 light_slt_N             (optional) index of selected N lights for training
 ```
 
+### Finding Helmholtz Pairs
+
+For DiLiGenT-MV style data you can search for nearly collocated camera-light
+pairs using `scripts/find_helmholtz_pairs.py`. The script loads `params.json`
+from an object directory and prints all view/light combinations that satisfy the
+Helmholtz condition within a specified angular threshold (default 15.5°):
+
+```bash
+python scripts/find_helmholtz_pairs.py /path/to/OBJ_NAME
+```
+
+
 
 ## Citation
 If you find this code or the provided models useful in your research, please consider cite: 
